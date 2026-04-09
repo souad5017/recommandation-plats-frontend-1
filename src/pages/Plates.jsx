@@ -1,40 +1,51 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import PlateCard from "../components/PlateCard";
+import api from "../api/axios";
 
 function Plates() {
-  const plates = [
-    { id: 1, name: "dfghj", price: 50, is_available: true },
-    { id: 2, name: "ftgyh", price: 40, is_available: false },
-    { id: 3, name: "dfghj", price: 35, is_available: true },
-    { id: 4, name: "sdfg", price: 30, is_available: false },
-    { id: 5, name: "fghj", price: 45, is_available: true }
-  ];
-
+  const [plates, setPlates] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    const fetchPlates = async () => {
+      try {
+        const res = await api.get("/plates");
+        setPlates(res.data);
+      } catch (err) {
+        setError("Erreur lors du chargement");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPlates();
+  }, []);
 
   const filtered = plates.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
+
   return (
-    <div>
-      <h1>Plates</h1>
+    <div className="p-6">
+      <h1 className="text-2xl font-bold">Plates</h1>
 
       <input
+        type="text"
+        placeholder="Rechercher..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        className="border p-2 my-4"
       />
 
-      {filtered.length === 0 && <p>Aucun plat trouvé.</p>}
+      {filtered.length === 0 && <p>Aucun plat trouvé</p>}
 
       {filtered.map((plate) => (
-        <PlateCard
-          key={plate.id}
-          id={plate.id}      
-          name={plate.name}
-          price={plate.price}
-          is_available={plate.is_available}
-        />
+        <PlateCard key={plate.id} {...plate} />
       ))}
     </div>
   );
