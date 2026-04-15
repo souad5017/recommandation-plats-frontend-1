@@ -2,37 +2,35 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../api/axios";
 
-function PlateDetail() {
+export default function PlateDetail() {
   const { id } = useParams();
 
   const [plate, setPlate] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchPlate = async () => {
-      try {
-        const res = await api.get(`/plates/${id}`);
-        setPlate(res.data);
-      } catch (err) {
-        setError("Erreur");
-      } finally {
-        setLoading(false);
-      }
+      const res = await api.get(`/plats/${id}`);
+      setPlate(res.data);
+      setLoading(false);
     };
 
     fetchPlate();
   }, [id]);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <p className="p-6">Loading...</p>;
+  if (!plate) return <p className="p-6">Not found</p>;
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold">{plate.name}</h1>
-      <p>{plate.price} MAD</p>
+      <p className="mt-2">{plate.price} MAD</p>
+
+      {plate.is_available ? (
+        <p className="text-green-600 mt-2">Disponible</p>
+      ) : (
+        <p className="text-red-500 mt-2">Non disponible</p>
+      )}
     </div>
   );
 }
-
-export default PlateDetail;

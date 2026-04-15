@@ -1,23 +1,24 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Plates from "./pages/Plates";
-import PlateDetail from "./pages/PlateDetail";
-import Profile from "./pages/Profile";
+import { Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
+import Plates from './pages/Plates';
+import Login from './pages/Login';
+import PlateDetail from './pages/PlateDetail';
 
 function App() {
   return (
-    <BrowserRouter>
+  
+    <AuthProvider>
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/plates" element={<Plates />} />
         <Route path="/plates/:id" element={<PlateDetail />} />
-        <Route path="/profile" element={
-          token ? <Profile /> : <Navigate to="/login" />
-        } />
       </Routes>
-    </BrowserRouter>
+    </AuthProvider>
+  
   );
 }
 
